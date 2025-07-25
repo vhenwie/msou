@@ -1,0 +1,1103 @@
+{
+  "name": "2 - Email Outreach",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Inactive"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -280,
+        160
+      ],
+      "id": "a3c91a19-c24a-4b5a-a0cd-5a3cbe1a7d2b",
+      "name": "Get Inactive Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Constants:\n- First Name: {{ $json['First Name'] }}\n- Job Title: {{ $json['Job Title'] }}\n- Company: {{ $json.Company }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert at sales and marketing."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "Your task is to create a personalized email outreach to potential prospects. Use the constants provided to create the email."
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Constants:\n- First Name: John\n- Job Title: Programmer\n- Company: 0CodeCamp"
+            },
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "=Hello John,\n\nGiven your role as a Programmer at 0CodeCamp, I imagine you're always looking for ways to enhance efficiency and optimize development processes. Our services specialize in helping tech teams achieve this, often through workflow automation and process improvements. Would you be open to a quick 15-minute chat to see if there's a fit?\n\nBest regards,\nMikael"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Constants:\n- First Name: Hannah\n- Job Title: Virtual Assistant\n- Company: Nashbys"
+            },
+            {
+              "type": "AIMessagePromptTemplate",
+              "message": "=Hello Hannah,\n\nI noticed your role at Nashbys and thought you might be interested in how our services can help streamline workflows and optimize processes—especially around areas like automation and website solutions.\n\nWould you be open to a brief 15-minute Zoom call to explore how we could support your team's goals?\n\nBest regards,\nMikael"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        -60,
+        160
+      ],
+      "id": "003c5cca-e38c-40aa-9bd9-df07bd436a1a",
+      "name": "Generate Personalized Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Inactive Leads').item.json.Email }}",
+        "subject": "Exciting opportunity at Crossfits",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        60
+      ],
+      "id": "4a7c2e00-3571-4dd7-9b63-a021f011bc9a",
+      "name": "Send Email to Lead (Gmail)",
+      "webhookId": "1990fab5-b2a4-44f5-9cf5-e71f0920f1aa"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        260
+      ],
+      "id": "0d56c847-740a-4033-b66f-9c33ad7ac2e4",
+      "name": "Send Email to Lead (SMTP)",
+      "webhookId": "8fcd3bab-bb69-4456-a1ef-d652eb3b6b67"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Get Inactive Leads').item.json.Email }}",
+            "Status": "Email Sent",
+            "Latest Email Timestamp": "={{ $now.format('L/d/y H:mm:ss') }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Latest Email Timestamp",
+              "displayName": "Latest Email Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time Elapsed",
+              "displayName": "Time Elapsed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Follow-Up",
+              "displayName": "Follow-Up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        300,
+        160
+      ],
+      "id": "1e7bc107-def4-460e-ab3f-bfa374032a69",
+      "name": "Update Lead Status",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Email Sent"
+            },
+            {
+              "lookupColumn": "Time Elapsed",
+              "lookupValue": "=3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -280,
+        680
+      ],
+      "id": "3b1e724f-dfac-41d6-ba57-9336c018af95",
+      "name": "Get Follow-Up Leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash-lite",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        20,
+        380
+      ],
+      "id": "27a74597-7ad6-4e84-9552-06ede2242b8b",
+      "name": "Gemini 2.5 Flash-Lite",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "rUqP8fkICz1qXWrx",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "=Hi {{ $json['First Name'] }},\n\nI just wanted to follow up to see if you had a chance to review my earlier message. I’d love to explore how our services could help streamline workflows and support your team at {{ $json.Company }}.\n\nWould you be available for a brief 15-minute Zoom call sometime this week?\n\nLooking forward to hearing from you.\n\nBest regards,\nMikael",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        680
+      ],
+      "id": "297b50f5-963f-4b3c-a9c6-ac40f05c387a",
+      "name": "Create Follow-Up Email"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.Email }}",
+            "Follow-Up": "Yes",
+            "Latest Email Timestamp": "={{ $now.format('L/d/y H:mm:ss') }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Latest Email Timestamp",
+              "displayName": "Latest Email Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time Elapsed",
+              "displayName": "Time Elapsed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Follow-Up",
+              "displayName": "Follow-Up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        160,
+        680
+      ],
+      "id": "ef10ad97-498f-4605-9b98-8e605cf5f04e",
+      "name": "Update Lead Status (Follow-Up)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        160
+      ],
+      "id": "883604dd-4ef2-4d50-be9c-72cc54215937",
+      "name": "Daily Trigger (Initial Outreach)"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        680
+      ],
+      "id": "baf07a41-5aa9-4d4c-8e71-90195b59cca1",
+      "name": "Daily Trigger (Follow-Up)"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Email Sent"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -300,
+        1180
+      ],
+      "id": "9d93bcd0-db8f-49da-8ee6-3534bd1b8342",
+      "name": "Get Lead List",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "54ef80c8-ff7e-4120-8785-2be2a453e482",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        1180
+      ],
+      "id": "0bdcf355-1f2b-4454-bb9d-e8565e49516e",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0",
+          "mode": "list",
+          "cachedResultName": "GITHUB SAMPLE LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "LEADS",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Jj-JmLzVlNysVdX3du7nrXdkof1D4uT2ZvKMkf_RCv0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $json.Email }}",
+            "Initial Email Timestamp": "={{ $now.format('L/d/y H:mm:ss') }}",
+            "Follow-Up": "Yes",
+            "Status": "Success"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Job Title",
+              "displayName": "Job Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Initial Email Timestamp",
+              "displayName": "Initial Email Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Time Elapsed",
+              "displayName": "Time Elapsed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Follow-Up",
+              "displayName": "Follow-Up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        140,
+        1180
+      ],
+      "id": "3044bb0e-4fb3-48dc-a14b-09875f5227d7",
+      "name": "Update Lead Status (Success)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -520,
+        1180
+      ],
+      "id": "5e7ba38a-dd81-448e-9bca-a3c323f15b33",
+      "name": "Monitor For Responses"
+    },
+    {
+      "parameters": {
+        "content": "# Email Personalization & Sending\n## Initial outreach to prospects, fetch \"Inactive\" leads, generate personalized email using AI\n## updates status to \"Email Sent\" and sends email to lead.\n",
+        "height": 580,
+        "width": 1580,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        -80
+      ],
+      "id": "0c678115-b1a5-405d-8010-6bdad672ab0d",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Follow-Up & Resend\n## Follow-up on Leads, update Follow-Up status to \"Yes\", repeat till response.",
+        "height": 420,
+        "width": 1440,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        540
+      ],
+      "id": "9289e927-5f07-48e6-ba14-65b6b8672626",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# Response and Success\n## Catch any gmail responses and report success status to slack.",
+        "height": 420,
+        "width": 1180,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -580,
+        1020
+      ],
+      "id": "41a8e5d2-d9da-482f-95ff-0122fcf91ca1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=Lead Name:\nLead Email:\nLead Response:",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        360,
+        1180
+      ],
+      "id": "f0b1ea71-2cc1-499c-a807-c85d0804f272",
+      "name": "Update Slack Channel With Success Status",
+      "webhookId": "53206c7b-c87a-4f1b-99c6-4a65e5eabbcb"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Get Inactive Leads').item.json.Email }}",
+        "subject": "Exciting opportunity at Crossfits",
+        "emailType": "text",
+        "message": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        380,
+        580
+      ],
+      "id": "11a1c08d-8dd9-4b80-83e3-1b111097436e",
+      "name": "Send Follow-Up Email to Lead (Gmail)",
+      "webhookId": "1990fab5-b2a4-44f5-9cf5-e71f0920f1aa"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        380,
+        780
+      ],
+      "id": "33035692-300f-4601-b568-4d8c721a319f",
+      "name": "Send Follow-Up Email to Lead (SMTP)",
+      "webhookId": "8fcd3bab-bb69-4456-a1ef-d652eb3b6b67"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=Lead Name:\nLead Email:\nLead Response:",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        680,
+        680
+      ],
+      "id": "69e0f931-4b05-43d0-a010-bbca0a38e97b",
+      "name": "Update Slack Channel With Follow-Up Status",
+      "webhookId": "53206c7b-c87a-4f1b-99c6-4a65e5eabbcb"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "text": "=Lead Name:\nLead Email:\nLead Response:",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        800,
+        160
+      ],
+      "id": "847fed98-4e79-420e-b1b7-d8f8158bd93e",
+      "name": "Update Slack Channel With Initial Outreach Status",
+      "webhookId": "53206c7b-c87a-4f1b-99c6-4a65e5eabbcb"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Inactive Leads": {
+      "main": [
+        [
+          {
+            "node": "Generate Personalized Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Personalized Email": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Status": {
+      "main": [
+        [
+          {
+            "node": "Send Email to Lead (Gmail)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Email to Lead (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Follow-Up Leads": {
+      "main": [
+        [
+          {
+            "node": "Create Follow-Up Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini 2.5 Flash-Lite": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Personalized Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Follow-Up Email": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Status (Follow-Up)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Status (Follow-Up)": {
+      "main": [
+        [
+          {
+            "node": "Send Follow-Up Email to Lead (Gmail)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Follow-Up Email to Lead (SMTP)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger (Initial Outreach)": {
+      "main": [
+        [
+          {
+            "node": "Get Inactive Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger (Follow-Up)": {
+      "main": [
+        [
+          {
+            "node": "Get Follow-Up Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Lead List": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Status (Success)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Monitor For Responses": {
+      "main": [
+        [
+          {
+            "node": "Get Lead List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Status (Success)": {
+      "main": [
+        [
+          {
+            "node": "Update Slack Channel With Success Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-Up Email to Lead (Gmail)": {
+      "main": [
+        [
+          {
+            "node": "Update Slack Channel With Follow-Up Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Follow-Up Email to Lead (SMTP)": {
+      "main": [
+        [
+          {
+            "node": "Update Slack Channel With Follow-Up Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Lead (Gmail)": {
+      "main": [
+        [
+          {
+            "node": "Update Slack Channel With Initial Outreach Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Lead (SMTP)": {
+      "main": [
+        [
+          {
+            "node": "Update Slack Channel With Initial Outreach Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c1e1048b-d781-4b49-8c9c-efba4ace66ab",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "04c9528d323808ea0863776d146dff0b5ae10fa9e6b52128ab90a357a12075ad"
+  },
+  "id": "x3XuA9oz5EbYBr3k",
+  "tags": []
+}

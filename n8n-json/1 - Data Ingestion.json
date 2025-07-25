@@ -1,0 +1,400 @@
+{
+  "name": "1 - Data Ingestion",
+  "nodes": [
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        420,
+        200
+      ],
+      "id": "5a3628f4-30ee-49ef-974a-ee4123eb6bfb",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "base": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "table": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [
+        860,
+        100
+      ],
+      "id": "de988733-a592-43b3-8cf5-cd4bf9209d41",
+      "name": "Update Leads Database (Airtable)"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        860,
+        300
+      ],
+      "id": "102d0a5e-de7c-4991-af25-1fb11f838dad",
+      "name": "Update Leads Database (GS)",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZeLSs0dWTCpssYX7",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "leadUpdated"
+      },
+      "type": "n8n-nodes-base.salesforceTrigger",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        400
+      ],
+      "id": "545d6614-2aaf-46ef-b0de-f20bb7055dcf",
+      "name": "Get New Leads from Salesforce"
+    },
+    {
+      "parameters": {
+        "eventsUi": {
+          "eventValues": [
+            {}
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspotTrigger",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        200
+      ],
+      "id": "b9dbd9f2-f2ab-4d1d-9972-e4fe6a659773",
+      "name": "Get New Leads from Hubspot",
+      "webhookId": "4fcdae2a-3192-4f67-9efa-27d45bffce1c"
+    },
+    {
+      "parameters": {
+        "content": "## Monitor and Track Leads\nMonitor new/updated Leads to query.",
+        "height": 680,
+        "width": 460
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        -100
+      ],
+      "id": "99985f12-b373-4ed4-9701-cb5d7e3ef722",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "01c8a01f-98a9-4a69-b33f-aaa1f2dc1d46",
+              "leftValue": "First Name",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "dd564855-6801-4c54-b798-df9a33868928",
+              "leftValue": "Last Name",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "98ef8f88-0957-44de-9537-f6aa468a6242",
+              "leftValue": "Job Title",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "5e92d276-fe43-48cb-9d61-ab56ce441ae5",
+              "leftValue": "Company",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "9f17ca2f-9d23-4e7e-87db-10e1feb9e2a6",
+              "leftValue": "Email",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        640,
+        200
+      ],
+      "id": "2d53b346-e180-4417-914f-9969054323a6",
+      "name": "Check For Data Completeness"
+    },
+    {
+      "parameters": {
+        "content": "## Update Leads\nValid Leads will be updated/added to the Lead list.",
+        "height": 520,
+        "width": 260,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        780,
+        -60
+      ],
+      "id": "44fdf590-f418-4ce4-aa5b-8af579208435",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "path": "906c61c7-a8ae-4877-ace0-7ab6ba922290",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -20,
+        0
+      ],
+      "id": "6eeb229b-2e19-4159-aac9-5e8a7cd1a11b",
+      "name": "Get New Leads From CRM API",
+      "webhookId": "906c61c7-a8ae-4877-ace0-7ab6ba922290"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"first_name\": data.firstn,\n  \"last_name\": data.lastn,\n  \"job_title\": data.jobt,\n  \"company\": data.company,\n  \"email\": data.email\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        0
+      ],
+      "id": "be88a1d7-a557-4d34-9e9f-0ce3ad9f8341",
+      "name": "CRM API Data Cleanup"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"first_name\": data.first_name,\n  \"last_name\": data.last_name,\n  \"job_title\": data.job_title,\n  \"company\": data.company_name,\n  \"email\": data.email_address\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        200
+      ],
+      "id": "6541a7b6-4b26-4085-8038-ce1dd545fd3d",
+      "name": "Hubspot Data Cleanup"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"first_name\": data.f_name,\n  \"last_name\": data.l_name,\n  \"job_title\": data.j_title,\n  \"company\": data.c_Name,\n  \"email\": data.email_address\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        200,
+        400
+      ],
+      "id": "5eb7abf4-8a44-46f3-b6aa-73707b78f12f",
+      "name": "Salesforce Data Cleanup"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Check For Data Completeness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Leads Database (Airtable)": {
+      "main": [
+        []
+      ]
+    },
+    "Update Leads Database (GS)": {
+      "main": [
+        []
+      ]
+    },
+    "Get New Leads from Salesforce": {
+      "main": [
+        [
+          {
+            "node": "Salesforce Data Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get New Leads from Hubspot": {
+      "main": [
+        [
+          {
+            "node": "Hubspot Data Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check For Data Completeness": {
+      "main": [
+        [
+          {
+            "node": "Update Leads Database (Airtable)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Leads Database (GS)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get New Leads From CRM API": {
+      "main": [
+        [
+          {
+            "node": "CRM API Data Cleanup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CRM API Data Cleanup": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hubspot Data Cleanup": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Salesforce Data Cleanup": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5301cde8-227b-4fcf-a026-893fafe8d5e9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "04c9528d323808ea0863776d146dff0b5ae10fa9e6b52128ab90a357a12075ad"
+  },
+  "id": "XQ96de1WwJ7J6qmv",
+  "tags": []
+}
