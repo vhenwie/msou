@@ -1,4 +1,4 @@
-# MSOU (Multi-Source Outreach Unfier)
+# MSOU (Multi-Source Outreach Unifier)
 
 This is a proof-of-concept n8n workflow and related assets for automating sales outreach from multiple data sources by aggregation and data validation.
 
